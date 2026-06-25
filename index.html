@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniConnect Console</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Startup Splash Overlay with Ripple Animation -->
+    <div id="splash-screen">
+        <div class="ripple-container">
+            <div class="ripple"></div>
+            <div class="ripple ripple-2"></div>
+            <div class="ripple ripple-3"></div>
+            <div class="splash-logo">
+                <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"></path>
+                    <path d="M6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"></path>
+                    <path d="M3 12h18"></path>
+                </svg>
+                <h2>OmniConnect</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Wallpaper Blur Glows -->
+    <div class="wallpaper-glow glow-1"></div>
+    <div class="wallpaper-glow glow-2"></div>
+
+    <!-- Main Application Wrapper -->
+    <div id="app-container" class="hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--system-blue)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"></path>
+                    <path d="M6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"></path>
+                    <path d="M3 12h18"></path>
+                </svg>
+                <span>OmniConnect</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard-view">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="devices-view">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span>Devices</span>
+                </button>
+                <button class="nav-item" data-tab="clipboard-view">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                    <span>Clipboard</span>
+                </button>
+                <button class="nav-item" data-tab="settings-view">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <span class="version-tag">v1.0.0</span>
+            </div>
+        </aside>
+
+        <!-- Main Window Container -->
+        <main class="main-window">
+            
+            <!-- Header section -->
+            <header class="app-header">
+                <div class="header-left">
+                    <h1 class="header-title">Console</h1>
+                    <div class="status-badge">
+                        <span class="status-indicator-dot online"></span>
+                        <span class="status-badge-text">All Systems Operational</span>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="network-stats">
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                        </svg>
+                        <span>84.2 ms latency</span>
+                    </div>
+                    <div class="system-time" id="live-clock">12:00:00 AM</div>
+                </div>
+            </header>
+
+            <!-- Scrollable Page Content -->
+            <div class="content-wrapper">
+                
+                <!-- Tab View: Dashboard -->
+                <div id="dashboard-view" class="tab-view active">
+                    
+                    <!-- Central Device Connection Hub (Docking Animation) -->
+                    <section class="connection-hub-card">
+                        <div class="hub-container">
+                            <!-- macOS Logo Node -->
+                            <div class="hub-node mac-node" id="hub-mac">
+                                <svg viewBox="0 0 170 170" width="28" height="28" fill="currentColor">
+                                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.37.13-9.13-1.9-14.34-6.08-3.57-2.85-7.39-7.44-11.46-13.77-9.83-15.39-14.74-31.96-14.74-49.72 0-10.85 2.24-20.08 6.73-27.69 4.48-7.62 10.42-12.28 17.81-13.98 5.48-1.18 11.47.05 17.99 3.68 5.7 3.12 9.6 4.7 11.69 4.7 1.8 0 5.42-1.39 10.88-4.16 6.36-3.23 12.03-4.55 17.02-3.95 15.15 1.79 26.19 8.87 33.12 21.24-13.48 8.16-20.08 19.3-19.8 33.42.27 10.59 4.1 19.08 11.47 25.47 7.39 6.38 16.07 9.87 26.06 10.47 1.13-3.9 2.25-7.78 3.38-11.66zm-32.94-91.8c0-8.12 2.86-15.2 8.57-21.24 5.72-6.04 12.63-9.24 20.73-9.59 0 .84.07 2.05.07 3.65 0 7.72-2.93 14.71-8.79 20.95-5.86 6.24-12.87 9.57-21.03 9.97a22.25 22.25 0 0 1-.55-3.74z"/>
+                                </svg>
+                            </div>
+                            
+                            <!-- Connecting Vector Lines Overlay -->
+                            <div class="hub-connections">
+                                <svg width="100%" height="100%">
+                                    <path id="path-mac" d="" stroke="rgba(10, 132, 255, 0.2)" stroke-width="1.5" fill="none"/>
+                                    <path id="path-win" d="" stroke="rgba(10, 132, 255, 0.2)" stroke-width="1.5" fill="none"/>
+                                </svg>
+                            </div>
+
+                            <!-- Central Power Core -->
+                            <div class="hub-center" id="hub-trigger">
+                                <div class="core-pulse"></div>
+                                <div class="core-inner">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                                        <line x1="12" y1="2" x2="12" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <div class="hub-led"></div>
+                            </div>
+                            
+                            <!-- Windows Logo Node -->
+                            <div class="hub-node win-node" id="hub-win">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                    <path d="M0 3.449L9.75 2.1v9.45H0V3.45zM0 12.45h9.75v9.45L0 20.551v-8.1zM10.95 1.936L24 0v11.55H10.95V1.936zM10.95 12.45H24v11.55l-13.05-1.936v-9.614z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="hub-status-bar">
+                            <span class="hub-status-text">Synchronizing Workspace</span>
+                            <span class="hub-status-badge">ACTIVE LINK</span>
+                        </div>
+                    </section>
+
+                    <!-- Device Grid -->
+                    <div class="device-grid" id="device-cards-container">
+                        <!-- Device cards will be loaded dynamically here -->
+                    </div>
+
+                    <!-- Selected Device Control Console -->
+                    <div class="control-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title" id="selected-device-title">Control Panel: Vishal's Mac</h2>
+                            <span class="panel-status-tag">Connected</span>
+                        </div>
+
+                        <div class="panel-body">
+                            
+                            <!-- Left: Live Feed & Clipboard -->
+                            <div class="panel-column-left">
+                                <div class="glass-section live-feed-container">
+                                    <div class="feed-header">
+                                        <h4>Live Screen Feed</h4>
+                                        <button class="mac-btn-circle" id="refresh-feed-btn" title="Refresh Screen">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="screen-view" id="screen-view-box">
+                                        <div class="screen-placeholder">
+                                            <span>No capture. Click refresh or "Take Screenshot"</span>
+                                        </div>
+                                        <div class="screen-loader hidden">
+                                            <div class="spinner"></div>
+                                            <span>Capturing device screen...</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-section clipboard-container">
+                                    <h4>Universal Clipboard</h4>
+                                    <div class="clipboard-input-group">
+                                        <textarea id="clipboard-box" placeholder="Type or paste text here to share it instantly across all active devices..."></textarea>
+                                        <button class="mac-btn-primary" id="clipboard-sync-btn">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                            </svg>
+                                            <span id="clip-btn-text">Sync to Clipboard</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Command Panel & Terminal -->
+                            <div class="panel-column-right">
+                                <div class="glass-section quick-actions-container">
+                                    <h4>Quick Actions</h4>
+                                    
+                                    <div class="actions-grid">
+                                        <button class="action-card-btn" id="btn-lock">
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                            <span>Lock Screen</span>
+                                        </button>
+
+                                        <button class="action-card-btn" id="btn-screenshot">
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                <circle cx="12" cy="13" r="4"></circle>
+                                            </svg>
+                                            <span>Capture Screen</span>
+                                        </button>
+
+                                        <button class="action-card-btn" id="btn-mute">
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" id="mute-icon">
+                                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                            </svg>
+                                            <span id="mute-btn-text">Mute Volume</span>
+                                        </button>
+                                        
+                                        <button class="action-card-btn" id="btn-beep">
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                            </svg>
+                                            <span>Play Beep</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="control-row">
+                                        <div class="slider-group">
+                                            <label for="volume-slider">Volume Control</label>
+                                            <div class="slider-wrapper">
+                                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                                </svg>
+                                                <input type="range" id="volume-slider" min="0" max="100" value="65">
+                                                <span class="slider-value" id="volume-val">65%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="speech-group">
+                                        <label for="say-text-input">Speak text out loud</label>
+                                        <div class="input-action-bar">
+                                            <input type="text" id="say-text-input" placeholder="Type a message to speak...">
+                                            <button class="mac-btn-primary" id="btn-say">
+                                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                </svg>
+                                                <span>Speak</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-section terminal-container">
+                                    <h4>Remote Terminal Session</h4>
+                                    <div class="terminal-body" id="terminal-history">
+                                        <div class="terminal-line">Welcome to OmniConnect Remote Shell. Type 'help' for instructions.</div>
+                                    </div>
+                                    <div class="terminal-input-row">
+                                        <span class="terminal-prompt" id="term-prompt-label">vishal@macbook ~ %</span>
+                                        <input type="text" id="terminal-input" autocomplete="off" placeholder="Run command...">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab View: Devices -->
+                <div id="devices-view" class="tab-view">
+                    <div class="glass-section full-width-section">
+                        <h2>Device Management</h2>
+                        <p class="section-desc">Register new devices or manage settings for existing enrolled devices.</p>
+                        
+                        <!-- Register Device Form -->
+                        <div class="device-registration-bar neumorphic-bar">
+                            <div class="reg-field">
+                                <label>Device Name</label>
+                                <input type="text" id="reg-device-name" placeholder="e.g. Vishal's iPhone, Living Room PC">
+                            </div>
+                            <div class="reg-field">
+                                <label>OS / Platform</label>
+                                <input type="text" id="reg-device-os" placeholder="e.g. iOS, Android, Windows, macOS">
+                            </div>
+                            <button class="mac-btn-primary" id="reg-device-submit-btn" style="height: 40px;">Register Device</button>
+                        </div>
+
+                        <div class="device-list-table-wrapper">
+                            <table class="device-table">
+                                <thead>
+                                    <tr>
+                                        <th>Device Name</th>
+                                        <th>IP Address</th>
+                                        <th>Status</th>
+                                        <th>OS Platform</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="device-table-body">
+                                    <!-- Device list will be loaded dynamically here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab View: Clipboard -->
+                <div id="clipboard-view" class="tab-view">
+                    <div class="glass-section full-width-section">
+                        <h2>Shared Clipboard Hub</h2>
+                        <p class="section-desc">View and manage clipboard logs synced across your network.</p>
+                        
+                        <div class="clipboard-dashboard">
+                            <div class="clipboard-box-main">
+                                <textarea id="clipboard-hub-textarea" placeholder="Paste items to sync across all your devices..."></textarea>
+                                <div class="hub-action-row">
+                                    <button class="mac-btn-primary" id="hub-push-btn">Broadcast to All Devices</button>
+                                    <button class="mac-btn-secondary" id="hub-clear-btn">Clear Clipboard</button>
+                                </div>
+                            </div>
+                            
+                            <div class="clipboard-history">
+                                <h4>Recent Clipboard Syncs</h4>
+                                <div class="history-list">
+                                    <div class="history-item">
+                                        <div class="history-meta">
+                                            <span class="history-device">Vishal's Mac</span>
+                                            <span class="history-time">12:35 PM</span>
+                                        </div>
+                                        <div class="history-content">https://github.com/google-deepmind/antigravity</div>
+                                    </div>
+                                    <div class="history-item">
+                                        <div class="history-meta">
+                                            <span class="history-device">Vishal's PC</span>
+                                            <span class="history-time">11:14 AM</span>
+                                        </div>
+                                        <div class="history-content">npm run dev -- --host</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab View: Settings -->
+                <div id="settings-view" class="tab-view">
+                    <div class="glass-section full-width-section">
+                        <h2>Console Settings</h2>
+                        
+                        <div class="settings-grid">
+                            <div class="settings-card">
+                                <h3>Connection Preferences</h3>
+                                <div class="settings-row">
+                                    <label>Auto-Reconnect</label>
+                                    <input type="checkbox" checked>
+                                </div>
+                                <div class="settings-row">
+                                    <label>WebSocket Port</label>
+                                    <input type="number" value="3000">
+                                </div>
+                            </div>
+
+                            <div class="settings-card">
+                                <h3>Security</h3>
+                                <div class="settings-row">
+                                    <label>Use Passcode Protection</label>
+                                    <input type="checkbox" id="passcode-opt">
+                                </div>
+                                <div class="settings-row">
+                                    <label>Device Token Authentication</label>
+                                    <input type="password" value="••••••••••••••••" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Fullscreen Screen Feed Overlay -->
+    <div id="fullscreen-overlay" class="hidden">
+        <div class="fullscreen-close-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+        <img id="fullscreen-img" src="" alt="Fullscreen Screen Feed">
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniConnect Mobile Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #e0e8f6;
+            --font-primary: 'Outfit', sans-serif;
+            --border-color: rgba(255, 255, 255, 0.6);
+            --bg-glass: #e0e8f6;
+            --system-blue: #3b7cf3;
+            --system-green: #30D158;
+            --system-red: #FF453A;
+            --text-primary: #313846;
+            --text-secondary: #5c677d;
+            --shadow-light: 4px 4px 10px #b8c2d3, -4px -4px 10px #ffffff;
+            --shadow-dark: 12px 12px 24px #b8c2d3, -12px -12px 24px #ffffff;
+            --shadow-inset: inset 4px 4px 8px #b8c2d3, inset -4px -4px 8px #ffffff;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Floating background wallpaper blur glows */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        .glow-1 { top: -50px; left: -50px; background: var(--system-blue); }
+        
+        .agent-card {
+            width: 100%;
+            max-width: 360px;
+            background: var(--bg-canvas);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            padding: 30px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+        .status-ring {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.6);
+            background: var(--bg-canvas);
+            box-shadow: 6px 6px 12px #b8c2d3, -6px -6px 12px #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .status-ring.online {
+            box-shadow: inset 3px 3px 6px #b8c2d3, inset -3px -3px 6px #ffffff;
+        }
+        .status-ring svg {
+            color: var(--system-blue);
+        }
+        .pulse {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--system-blue);
+            opacity: 0;
+        }
+        .status-ring.online .pulse {
+            animation: pulse-wave 2s infinite;
+        }
+        @keyframes pulse-wave {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .stats-box {
+            width: 100%;
+            background: var(--bg-canvas);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            box-shadow: var(--shadow-inset);
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+        }
+        .stat-label { color: var(--text-secondary); }
+        .stat-value { font-weight: 600; }
+        
+        .action-log {
+            width: 100%;
+            height: 85px;
+            background: var(--bg-canvas);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            overflow-y: auto;
+            text-align: left;
+            box-shadow: var(--shadow-inset);
+        }
+        .btn-grant {
+            background: var(--bg-canvas);
+            color: var(--system-blue);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            box-shadow: 4px 4px 8px #b8c2d3, -4px -4px 8px #ffffff;
+        }
+        .btn-grant:active {
+            box-shadow: inset 3px 3px 6px #b8c2d3, inset -3px -3px 6px #ffffff;
+            transform: scale(0.98);
+        }
+        .btn-console-link {
+            background: var(--bg-canvas);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 4px 4px 8px #b8c2d3, -4px -4px 8px #ffffff;
+        }
+        .btn-console-link:hover {
+            box-shadow: 2px 2px 4px #b8c2d3, -2px -2px 4px #ffffff;
+            color: var(--text-primary);
+        }
+        .btn-console-link:active {
+            box-shadow: inset 3px 3px 6px #b8c2d3, inset -3px -3px 6px #ffffff;
+        }
+
+        /* ==========================================================================
+           Custom Lock Screen Modal (Non-Blocking Overlay)
+           ========================================================================== */
+        #lock-screen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-canvas);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        #lock-screen-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .lock-container {
+            text-align: center;
+            padding: 30px;
+            max-width: 320px;
+            background: var(--bg-canvas);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            box-shadow: var(--shadow-dark);
+        }
+        .lock-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-canvas);
+            border: 1px solid rgba(255, 69, 58, 0.3);
+            color: var(--system-red);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 4px 4px 8px #b8c2d3, -4px -4px 8px #ffffff;
+            animation: lock-pulse-neumorphic 2s infinite;
+        }
+        @keyframes lock-pulse-neumorphic {
+            0% { box-shadow: 4px 4px 8px #b8c2d3, -4px -4px 8px #ffffff; }
+            50% { box-shadow: inset 3px 3px 6px #b8c2d3, inset -3px -3px 6px #ffffff; }
+            100% { box-shadow: 4px 4px 8px #b8c2d3, -4px -4px 8px #ffffff; }
+        }
+        .lock-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .lock-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        .btn-unlock {
+            background: var(--bg-canvas);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 3px 3px 6px #b8c2d3, -3px -3px 6px #ffffff;
+            transition: all 0.2s;
+        }
+        .btn-unlock:hover {
+            box-shadow: 1px 1px 3px #b8c2d3, -1px -1px 3px #ffffff;
+        }
+        .btn-unlock:active {
+            box-shadow: inset 2px 2px 4px #b8c2d3, inset -2px -2px 4px #ffffff;
+        }
+
+        /* Hidden media stream elements */
+        video, canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="glow glow-1"></div>
+
+    <!-- Main Agent Interface -->
+    <div class="agent-card">
+        <div class="status-ring online">
+            <div class="pulse"></div>
+            <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" stroke-width="1.5" fill="none">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+        </div>
+
+        <div>
+            <h1 id="device-title">Mobile Agent</h1>
+            <p>Connects sensors, speech synthesizer, and captures device templates.</p>
+        </div>
+
+        <button class="btn-grant" id="perm-btn">Unlock Speech & Camera</button>
+
+        <div class="stats-box">
+            <div class="stat-row">
+                <span class="stat-label">OS Platform</span>
+                <span class="stat-value" id="stat-os">Detecting...</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Battery Level</span>
+                <span class="stat-value" id="stat-batt">Detecting...</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Network Status</span>
+                <span class="stat-value" id="stat-conn" style="color: var(--system-green);">Connected</span>
+            </div>
+        </div>
+
+        <div class="action-log" id="log-box">
+            <div>[System] Handshake initiated...</div>
+        </div>
+
+        <a href="/?console=true" class="btn-console-link">Switch to Admin Console</a>
+    </div>
+
+    <!-- Non-Blocking Custom Lock Screen Overlay -->
+    <div id="lock-screen-overlay">
+        <div class="lock-container">
+            <div class="lock-icon-wrapper">
+                <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <div class="lock-title">Access Restricted</div>
+            <div class="lock-desc">This mobile console has been remote-locked by the OmniConnect administrator. Access is temporarily suspended.</div>
+            <button class="btn-unlock" id="unlock-btn">Dismiss Alert</button>
+        </div>
+    </div>
+
+    <!-- Hidden multimedia captures -->
+    <video id="video-stream" autoplay playsinline></video>
+    <canvas id="canvas-snap"></canvas>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io({ query: { type: 'agent' } });
+        
+        const logBox = document.getElementById("log-box");
+        const permBtn = document.getElementById("perm-btn");
+        const statOs = document.getElementById("stat-os");
+        const statBatt = document.getElementById("stat-batt");
+        const lockOverlay = document.getElementById("lock-screen-overlay");
+        const unlockBtn = document.getElementById("unlock-btn");
+        
+        let deviceId = "vishal-phone";
+        let deviceName = "Vishal's Phone";
+        
+        // Detect OS platform
+        const userAgent = navigator.userAgent;
+        let osPlatform = "Mobile Browser";
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent) || 
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                      (/Macintosh/.test(userAgent) && 'ontouchend' in document);
+                      
+        if (isIOS) {
+            osPlatform = "iOS Mobile";
+            deviceId = "vishal-iphone";
+            deviceName = "Vishal's iPhone";
+        } else if (/Android/.test(userAgent)) {
+            osPlatform = "Android Mobile";
+            deviceId = "vishal-android";
+            deviceName = "Vishal's Android";
+        }
+        
+        document.getElementById("device-title").textContent = deviceName;
+        statOs.textContent = osPlatform;
+
+        function log(msg) {
+            const div = document.createElement("div");
+            div.textContent = `[${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}] ${msg}`;
+            logBox.appendChild(div);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // Screen Wake Lock handle (prevents phone going to sleep)
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    log("🔋 Screen Wake Lock active (prevents sleeping).");
+                    
+                    wakeLock.addEventListener('release', () => {
+                        log("Screen Wake Lock released.");
+                    });
+                }
+            } catch (err) {
+                console.warn(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        }
+
+        // Handle page visibility change to re-request wake lock
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
+        // Grant permission / Unlock Audio & Camera
+        permBtn.addEventListener("click", async () => {
+            // 1. Request Wake Lock
+            await requestWakeLock();
+
+            // 2. Unlock Speech Synthesis (Play silent utterance)
+            if (window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(utterance);
+                log("🔊 Voice synthesizer unlocked.");
+            }
+
+            // 3. Unlock Audio Context
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+                log("🎵 Audio beep context unlocked.");
+            } catch(e) {}
+
+            // 4. Request Camera access
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                    stream.getTracks().forEach(track => track.stop());
+                    log("📸 Camera stream authorized.");
+                    permBtn.style.display = "none";
+                } catch (e) {
+                    log("❌ Camera auth failed: " + e.message);
+                }
+            } else {
+                log("⚠️ Camera blocked (HTTP Context). Enabled screen template fallback.");
+                permBtn.style.display = "none";
+            }
+        });
+
+        // Fetch battery stats
+        let batteryLevel = "100%";
+        if (navigator.getBattery) {
+            navigator.getBattery().then(batt => {
+                function updateBattInfo() {
+                    batteryLevel = Math.round(batt.level * 100) + "%";
+                    if (batt.charging) batteryLevel += " (Charging)";
+                    statBatt.textContent = batteryLevel;
+                    sendRegistration();
+                }
+                batt.addEventListener('levelchange', updateBattInfo);
+                batt.addEventListener('chargingchange', updateBattInfo);
+                updateBattInfo();
+            });
+        } else {
+            statBatt.textContent = "Unknown";
+        }
+
+        function sendRegistration() {
+            if (socket.connected) {
+                socket.emit('register_agent', {
+                    device_id: deviceId,
+                    name: deviceName,
+                    os: osPlatform,
+                    cpu: "ARM SoC",
+                    battery: batteryLevel,
+                    active_app: lockOverlay.classList.contains("show") ? "Screen Locked" : "OmniConnect Web Agent"
+                });
+            }
+        }
+
+        socket.on("connect", () => {
+            log("Connected to Hub server!");
+            sendRegistration();
+        });
+
+        socket.on("disconnect", () => {
+            log("Disconnected from Hub server.");
+        });
+
+        // Action Trigger listener
+        socket.on("action_trigger", async (data) => {
+            const { action, payload } = data;
+            log(`Remote Command: ${action}`);
+            
+            const response = { success: true, action: action, device_id: deviceId };
+            
+            try {
+                if (action === "beep") {
+                    if (navigator.vibrate) {
+                        navigator.vibrate([200, 100, 200]);
+                    }
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = "sine";
+                    osc.frequency.value = 880; 
+                    gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                    response["message"] = "Beep tone played and phone vibrated.";
+                    
+                } else if (action === "say") {
+                    const text = payload.text || "Hello";
+                    if (window.speechSynthesis) {
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        window.speechSynthesis.speak(utterance);
+                        response["message"] = `Speech synthesized: "${text}"`;
+                    } else {
+                        throw new Error("Speech synthesis not supported.");
+                    }
+                    
+                } else if (action === "screenshot") {
+                    log("Capturing screen feed...");
+                    const video = document.getElementById("video-stream");
+                    const canvas = document.getElementById("canvas-snap");
+                    let captured = false;
+                    
+                    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                        try {
+                            const stream = await navigator.mediaDevices.getUserMedia({ 
+                                video: { facingMode: "user", width: 480, height: 360 } 
+                            });
+                            video.srcObject = stream;
+                            await new Promise(resolve => video.onloadedmetadata = resolve);
+                            await new Promise(resolve => setTimeout(resolve, 500)); 
+                            
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            const ctx = canvas.getContext("2d");
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            
+                            stream.getTracks().forEach(track => track.stop());
+                            captured = true;
+                            response["message"] = "Webcam snapshot captured successfully.";
+                        } catch (e) {
+                            log("Camera capture failed: " + e.message);
+                        }
+                    }
+                    
+                    if (!captured) {
+                        // Safe context drawing fallback
+                        canvas.width = 480;
+                        canvas.height = 640;
+                        const ctx = canvas.getContext("2d");
+                        
+                        const grad = ctx.createLinearGradient(0, 0, 0, 640);
+                        grad.addColorStop(0, '#10141d');
+                        grad.addColorStop(1, '#080a0e');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(0, 0, 480, 640);
+                        
+                        ctx.fillStyle = 'rgba(10, 132, 255, 0.1)';
+                        ctx.beginPath();
+                        ctx.arc(240, 320, 150, 0, Math.PI*2);
+                        ctx.fill();
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 26px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(deviceName, 240, 240);
+                        
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                        ctx.font = '16px sans-serif';
+                        ctx.fillText(osPlatform + ' Agent Client', 240, 275);
+                        ctx.fillText('Status: Connected (HTTP Mode)', 240, 310);
+                        ctx.fillText('Battery Level: ' + batteryLevel, 240, 345);
+                        
+                        ctx.strokeStyle = 'var(--system-green)';
+                        ctx.lineWidth = 4;
+                        ctx.beginPath();
+                        ctx.arc(240, 430, 35, 0, Math.PI*2);
+                        ctx.stroke();
+                        
+                        ctx.fillStyle = 'var(--system-green)';
+                        ctx.beginPath();
+                        ctx.arc(240, 430, 10, 0, Math.PI*2);
+                        ctx.fill();
+                        
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                        ctx.beginPath();
+                        ctx.roundRect(140, 620, 200, 6, 3);
+                        ctx.fill();
+                        
+                        response["message"] = "Mock phone screenshot generated.";
+                    }
+                    
+                    const dataUrl = canvas.toDataURL("image/jpeg");
+                    response["image_data"] = dataUrl;
+                    log("Screen snapshot sent back!");
+                    
+                } else if (action === "lock") {
+                    // Non-blocking custom CSS overlay display
+                    lockOverlay.classList.add("show");
+                    sendRegistration(); // Update status app
+                    response["message"] = "Remote lock overlay activated on phone.";
+                    log("🚨 Device Locked remotely.");
+                    
+                } else if (action === "volume") {
+                    response["message"] = "Volume adjusted (System restricted).";
+                    
+                } else {
+                    throw new Error("Command not supported on mobile browser client.");
+                }
+            } catch (err) {
+                response["success"] = false;
+                response["error"] = err.message;
+                log(`Error: ${err.message}`);
+            }
+            
+            socket.emit("agent_response", response);
+        });
+
+        // Dismiss Lock Screen overlay button
+        unlockBtn.addEventListener("click", () => {
+            lockOverlay.classList.remove("show");
+            sendRegistration();
+            log("🔓 Device Unlocked.");
+        });
+    </script>
+</body>
+</html>

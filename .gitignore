@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+capture.jpg
+devices.json
+.vscode/
+.DS_Store
